@@ -13,15 +13,13 @@ require 'rake'
 
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
-  # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "ractionscript"
   gem.homepage = "http://github.com/blak3mill3r/ractionscript"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{Programmatically generate ActionScript3 source code from within Ruby.}
+  gem.description = %Q{If you ever longed for an easy and concise way to do compile-time logic for ActionScript this is for you.}
   gem.email = "blak3mill3r@gmail.com"
   gem.authors = ["Blake Miller"]
-  # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
 

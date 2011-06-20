@@ -1,6 +1,6 @@
 = ractionscript
 
-Description goes here.
+Programmatically generate ActionScript3 source code from within Ruby.
 
 == Contributing to ractionscript
  
