@@ -2,6 +2,7 @@ require 'rjb'
 require 'ruby2ruby'
 require 'sexp_template'
 require 'sexp_builder'
+require 'awesome_print'
 
 # add current dir to ruby load path
 $:.unshift File.dirname(__FILE__)
@@ -52,26 +53,57 @@ end
 #require 'ractionscript/dsl/processor'
 require 'ractionscript/dsl/generator'
 
+# working method definition s-expression:
+method_definition = s(:ras,
+         :method_definition,
+         "myMethod",
+         "void",
+         s(:block,
+           s(:ras, :param, s(:str, "foo"), s(:str, "int")),
+           s(:ras, :param, s(:str, "bar"), s(:str, "String")),
+           s(:ras, :param, s(:str, "baz"), s(:nil)),  # example of an untyped parameter
+           s(:ras, :rest_param, s(:str, "everythingelse"))
+          )
+        )
+
 sexp = s(:ras,
          :compilation_unit,
-         s(:lit, 'foo')
+         'Foo',
+         'com.whatsys.actionscriptproject',
+         s(:block,
+           method_definition
+          )
         )
- puts sexp.inspect
 
-#require 'ruby-debug';debugger
-result = Ractionscript::DSL::Generator.new.process(sexp)
-puts "after processing: " 
-puts result.inspect
-foo = Ruby2Ruby.new.process(result)
-puts "and here's what it would actually do"
-puts 
-puts foo
 
+#ap sexp
+
+generator = Ractionscript::DSL::Generator.new
+sourcebuilder = Ruby2Ruby.new.process( generator.process(sexp) )
+#puts "and here's what it would actually do if you were foolish enough to run it"
+#puts 
+#puts sourcebuilder
+
+class BuilderContext
+  include Ractionscript::JavaTypes::MetaAs
+end
+
+BuilderContext.class_eval(sourcebuilder)
+bc = BuilderContext.new
+unit = bc.metacompile
+
+sw = Ractionscript::JavaTypes::Util::StringWriter.new
+Ractionscript::AST::Factory.newWriter.write(sw, unit)
+
+#puts
+#puts "and, whomp! here comes valid as3 source file I hope:"
+#puts
+puts sw.toString
 
 
 #Ras = Ractionscript
 #
-## simple test:
+## parse actionscript source:
 #
 #sourcefile = "/home/blake/w/ruby2as/util/AdController.as"
 #
@@ -86,7 +118,8 @@ puts foo
 #
 #puts "#{sourcefile} defines #{compunit.getPackageName}.#{clazz.getName}"
 #
-#clazz.setName "ShittyBalls"
+## rename the class:
+#clazz.setName "DumbClass"
 #
 #sw = Ras::JavaTypes::Util::StringWriter.new
 #f.newWriter.write(sw, compunit)

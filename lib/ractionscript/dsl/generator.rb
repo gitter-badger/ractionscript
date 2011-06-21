@@ -4,27 +4,35 @@ module Ractionscript
 
     class Generator < SexpProcessor
       include SexpTemplate
-      include Ractionscript::JavaTypes::MetaAs
 
+      # top level class (source file, compilation unit)
+      #TODO support modifiers and annotations
       template :compilation_unit do
-        _ras_buffer = [_ras_current = []]
-        unit = Ras::AST::Factory.newClass(name!)
-        _ras_context = unit.getType
-           #TODO support modifiers and annotations
-        _ras_buffer.join
+        def metacompile
+        _ras_factory = Ractionscript::AST::Factory
+        _ras_comp_unit = _ras_factory.newClass(name!)
+        _ras_comp_unit.setPackageName(package_name!)
+        _ras_class = _ras_comp_unit.getType
+        content!
+        _ras_comp_unit
+        end
       end
 
-      template :method_decl do
-        # TODO support all modifiers and annotations
-        method = _ras_context.newMethod(name!, Visibility.PUBLIC, return_type!)
-        params = params!
-        # FIXME make sure this will respect order of parameters
-        # TODO support untyped arguments (metaas wants java null for the type in that case)
-        # TODO support 'rest' params, somehow...
-        params.each do |name_and_type|
-          name, type = name_and_type
-          method.addParam(name, type)
-        end
+      # method definition (with or without a code block)
+      # TODO support all modifiers and annotations
+      template :method_definition do
+        _ras_method = _ras_class.newMethod(name!, Visibility.PUBLIC, return_type!)
+        content!
+      end
+
+      # parameter in a method definition
+      template :param do
+        _ras_method.addParam(name!, type!)
+      end
+
+      # "rest" parameter in a method definition, e.g. parameter 'b' in function foo(a:int, ...b)
+      template :rest_param do
+        _ras_method.addRestParam(name!)
       end
 
       ## Initialize
@@ -34,23 +42,32 @@ module Ractionscript
         self.auto_shift_type = true
       end
       
-      ## Processors
+      ## Processors (rewriters of s-expressions)
       def process_ras(exp)
         type = exp.shift
         send("ras_#{type}", exp)
       end
 
       def ras_compilation_unit(exp)
-        render :compilation_unit, :name => exp.shift#, :content => process(exp.shift)
+        render :compilation_unit,
+               :name         => s(:str, exp.shift),
+               :package_name => s(:str, exp.shift),
+               :content      => process(exp.shift)
       end
 
-      def ras_method_decl(exp)
-        render :method_decl,
-               :name        => exp.shift,
-               :params      => process(exp.shift),
-               :return_type => process(exp.shift)
-               #:body        => process(exp.shift)
-        # FIXME how to handle method body?
+      def ras_method_definition(exp)
+        render :method_definition,
+               :name        => s(:str, exp.shift),
+               :return_type => s(:str, exp.shift),
+               :content     => process(exp.shift)
+      end
+
+      def ras_param(exp)
+        render :param, :name => exp.shift, :type => exp.shift
+      end
+
+      def ras_rest_param(exp)
+        render :rest_param, :name => exp.shift
       end
 
     end
