@@ -48,57 +48,68 @@ module Ractionscript
     Factory = Ractionscript::JavaTypes::MetaAs::Factory.new
   end
 
+  module Sexp
+    def self.proc_to_sexp(blk)
+      pt = ParseTree.new(false)
+      sexp = pt.parse_tree_for_proc(blk)
+      Unifier.new.process(sexp)
+    end
+  end
+
 end
 
 #require 'ractionscript/dsl/processor'
 require 'ractionscript/dsl/generator'
-
-# working method definition s-expression:
-method_definition = s(:ras,
-         :method_definition,
-         "myMethod",
-         "void",
-         s(:block,
-           s(:ras, :param, s(:str, "foo"), s(:str, "int")),
-           s(:ras, :param, s(:str, "bar"), s(:str, "String")),
-           s(:ras, :param, s(:str, "baz"), s(:nil)),  # example of an untyped parameter
-           s(:ras, :rest_param, s(:str, "everythingelse"))
-          )
-        )
-
-sexp = s(:ras,
-         :compilation_unit,
-         'Foo',
-         'com.whatsys.actionscriptproject',
-         s(:block,
-           method_definition
-          )
-        )
+require 'ruby_parser'
 
 
-#ap sexp
+n = 42
+my_ractionscript_code = proc {
+
+# this is how ractionscript source might look
+  args :x   => :int,
+       :y   => :int,
+       :z   => nil,
+       :all => :rest
+  returN :int
+  function("mySoonToBeActionScriptFunction#{n}") { 
+    #this should become actionscript
+    exp! { x = (y + 3) * 2 }
+    #this should still be ruby
+    x = (y + 3) * 2
+  }
+
+}
+
+sexp = Ractionscript::Sexp.proc_to_sexp my_ractionscript_code 
+
+# or load ractionscript source from file:
+#code = File.read(ARGV[0])
+#sexp = RubyParser.new.parse(code)
 
 generator = Ractionscript::DSL::Generator.new
-sourcebuilder = Ruby2Ruby.new.process( generator.process(sexp) )
+ap generator.process(sexp)
+#generator.process(sexp)
+#sourcebuilder = Ruby2Ruby.new.process( generator.process(sexp) )
 #puts "and here's what it would actually do if you were foolish enough to run it"
 #puts 
 #puts sourcebuilder
 
-class BuilderContext
-  include Ractionscript::JavaTypes::MetaAs
-end
-
-BuilderContext.class_eval(sourcebuilder)
-bc = BuilderContext.new
-unit = bc.metacompile
-
-sw = Ractionscript::JavaTypes::Util::StringWriter.new
-Ractionscript::AST::Factory.newWriter.write(sw, unit)
-
-#puts
-#puts "and, whomp! here comes valid as3 source file I hope:"
-#puts
-puts sw.toString
+#class BuilderContext
+#  include Ractionscript::JavaTypes::MetaAs
+#end
+#
+#BuilderContext.class_eval(sourcebuilder)
+#bc = BuilderContext.new
+#unit = bc.metacompile
+#
+#sw = Ractionscript::JavaTypes::Util::StringWriter.new
+#Ractionscript::AST::Factory.newWriter.write(sw, unit)
+#
+##puts
+##puts "and, whomp! here comes valid as3 source file I hope:"
+##puts
+#puts sw.toString
 
 
 #Ras = Ractionscript
