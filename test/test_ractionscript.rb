@@ -1,7 +1,7 @@
 require 'helper'
 
 class TestRactionscript < Test::Unit::TestCase
-  should "probably rename this file and start testing for real" do
-    flunk "hey buddy, you should probably rename this file and start testing for real"
+  should "produce valid ActionScript code consistently trapping errors in ruby as much as possible" do
+    flunk "check back later"
   end
 end

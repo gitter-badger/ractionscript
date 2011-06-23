@@ -2,6 +2,7 @@ require 'rjb'
 require 'ruby2ruby'
 require 'sexp_template'
 require 'sexp_builder'
+require File.join( File.dirname(__FILE__), 'ractionscript/dotvisuals' )
 require 'awesome_print'
 
 # add current dir to ruby load path
@@ -88,7 +89,18 @@ sexp = Ractionscript::Sexp.proc_to_sexp my_ractionscript_code
 #sexp = RubyParser.new.parse(code)
 
 generator = Ractionscript::DSL::Generator.new
-ap generator.process(sexp)
+newsexp = generator.process(sexp)
+File.open("./output", "w") { |f| f.write newsexp.to_dot }
+`head -2 output > output.header`
+`tail -1 output > output.footer`
+`cat output | sort | uniq | grep -v digraph | grep -v node | grep -v \\} > output.unfucked`
+`cat output.header output.unfucked output.footer > output`
+`dot -Tsvg output > output.svg`
+#`xsltproc /home/blake/w/diagram-tools/notugly.xsl output.svg > output.notugly.svg`
+#`rm -f output.header output.footer output`
+puts "rsvg-view output.svg"
+system "rsvg-view output.svg"
+#ap generator.process(sexp)
 #generator.process(sexp)
 #sourcebuilder = Ruby2Ruby.new.process( generator.process(sexp) )
 #puts "and here's what it would actually do if you were foolish enough to run it"
