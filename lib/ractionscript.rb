@@ -22,11 +22,6 @@ Rjb::load(cp.join(":"))
 
 module Ractionscript
 
-  #module DSL
-  #  autoload :Processor, 'ractionscript/dsl/processor'
-  #  autoload :Generator, 'ractionscript/dsl/generator'
-  #end
-
   module JavaTypes
 
     module MetaAs
@@ -50,59 +45,48 @@ module Ractionscript
   end
 
   module Sexp
-    def self.proc_to_sexp(blk)
-      pt = ParseTree.new(false)
-      sexp = pt.parse_tree_for_proc(blk)
+    def self.ruby_string_to_sexp(ruby)
+      sexp = RubyParser.new.parse(ruby)
       Unifier.new.process(sexp)
+    end
+
+    def self.viz_sexp(sexp, sexp_path_query=nil)
+      File.open("./output.tmp", "w") { |f| f.write sexp.to_dot(sexp_path_query) }
+      `dot -Tsvg output.tmp > output.tmp.svg`
+      `xsltproc /home/blake/w/diagram-tools/notugly.xsl output.tmp.svg > output.notugly.svg`
+      #`rm -f output.tmp output.tmp.svg`
+      `rm -f output.tmp.svg`
+      system "rsvg-view output.notugly.svg &"
     end
   end
 
 end
 
 #require 'ractionscript/dsl/processor'
-require 'ractionscript/dsl/generator'
+require 'ractionscript/dsl/translator'
 require 'ruby_parser'
 
+ractionscript_source_file = File.join( File.dirname( __FILE__ ) , 'ractionscript_simpletest.as3.rb' )
+ractionscript_source = File.read( ractionscript_source_file )
 
-n = 42
-my_ractionscript_code = proc {
-
-# this is how ractionscript source might look
-  args :x   => :int,
-       :y   => :int,
-       :z   => nil,
-       :all => :rest
-  returN :int
-  function("mySoonToBeActionScriptFunction#{n}") { 
-    #this should become actionscript
-    exp! { x = (y + 3) * 2 }
-    #this should still be ruby
-    x = (y + 3) * 2
-  }
-
+highlight = Q?{
+        s(:call,
+          nil,
+          :args,
+          s(:arglist, _ % :arglist))\
+% :k
 }
 
-sexp = Ractionscript::Sexp.proc_to_sexp my_ractionscript_code 
+sexp = Ractionscript::Sexp.ruby_string_to_sexp ractionscript_source 
+match = (sexp / highlight).first
 
-# or load ractionscript source from file:
-#code = File.read(ARGV[0])
-#sexp = RubyParser.new.parse(code)
+Ractionscript::Sexp.viz_sexp( sexp, match[:k] )
 
-generator = Ractionscript::DSL::Generator.new
-newsexp = generator.process(sexp)
-File.open("./output", "w") { |f| f.write newsexp.to_dot }
-`head -2 output > output.header`
-`tail -1 output > output.footer`
-`cat output | sort | uniq | grep -v digraph | grep -v node | grep -v \\} > output.unfucked`
-`cat output.header output.unfucked output.footer > output`
-`dot -Tsvg output > output.svg`
-#`xsltproc /home/blake/w/diagram-tools/notugly.xsl output.svg > output.notugly.svg`
-#`rm -f output.header output.footer output`
-puts "rsvg-view output.svg"
-system "rsvg-view output.svg"
-#ap generator.process(sexp)
-#generator.process(sexp)
-#sourcebuilder = Ruby2Ruby.new.process( generator.process(sexp) )
+translator = Ractionscript::DSL::Translator.new
+newsexp = translator.process(sexp, highlight)
+
+#Ractionscript::Sexp.viz_sexp( newsexp  )
+#sourcebuilder = Ruby2Ruby.new.process( translator.process(sexp) )
 #puts "and here's what it would actually do if you were foolish enough to run it"
 #puts 
 #puts sourcebuilder
@@ -124,26 +108,3 @@ system "rsvg-view output.svg"
 #puts sw.toString
 
 
-#Ras = Ractionscript
-#
-## parse actionscript source:
-#
-#sourcefile = "/home/blake/w/ruby2as/util/AdController.as"
-#
-#source = File.read(sourcefile)
-#
-#f = Ras::AST::Factory
-#sr = Ras::JavaTypes::Util::StringReader
-#
-#compunit = f.newParser.parse( sr.new(source) )
-#
-#clazz = compunit.getType
-#
-#puts "#{sourcefile} defines #{compunit.getPackageName}.#{clazz.getName}"
-#
-## rename the class:
-#clazz.setName "DumbClass"
-#
-#sw = Ras::JavaTypes::Util::StringWriter.new
-#f.newWriter.write(sw, compunit)
-#puts sw.toString
