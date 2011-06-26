@@ -1,3 +1,5 @@
+#TODO clean this up
+#it's borrowed from https://github.com/vidarh/diagram-tools
 
 module ToDot
  def self.escape str
@@ -11,7 +13,7 @@ end
 
 #TODO could this be put in class Sexp where it belongs? I didn't write it
 class Array
-  def to_dot_label; "()"; end
+  def to_dot_label; "#"; end
 
   def to_dot_edge src, shorten
     " #{src}" + (shorten ? "" : ":#{object_id}") + " -> #{object_id};\n"
@@ -27,7 +29,7 @@ class Array
     # if there are no sub-sexps (self is a composition of atoms)
     shorten = !ary && self[1..-1].detect{|o| !o.is_a?(Array)} == nil
     s = " #{object_id} [label=\""
-#shorten = false
+shorten = false
     if shorten
       s += self[0].to_dot_label + "\", shape=rect, fillcolor=#{fillcolor}];\n"
     else
