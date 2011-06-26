@@ -9,7 +9,8 @@ require 'sexp_builder'
 require 'ruby_parser'
 
 # internals
-require 'ractionscript/dsl/generator'
+require 'ractionscript/dsl/generators/compilation_unit'
+require 'ractionscript/dsl/generators/method_definition'
 require 'ractionscript/dsl/translators/class_definition'
 require 'ractionscript/dsl/translators/method_definition'
 require 'ractionscript/dotvisuals'
@@ -37,7 +38,7 @@ system "killall rsvg-view"  # temp, convenient for me
 highlight = Q?{
             s(:iter, s(:call, nil, :class!, s(:arglist, _ % :class_name)), nil, _ % :class_definition_body)
 }
-Ractionscript::Sexp.viz_sexp sexp, highlight, :class_definition_body
+#Ractionscript::Sexp.viz_sexp sexp, highlight, :class_definition_body
 
 # translate the ruby-syntax s-expression
 # rewriting the parts that are meant to become actionscript
@@ -50,3 +51,33 @@ sexp = Ractionscript::DSL::Translators::ClassDefinition.new.process(sexp)
 sexp = Ractionscript::DSL::Translators::MethodDefinition.new.process(sexp)
 Ractionscript::Sexp.viz_sexp sexp, highlight
 
+# translate the ractionscript s-expression to a ruby ast s-expression which will build actionscript ast with metaas java classes
+sexp = Ractionscript::DSL::Generators::CompilationUnit.new.process(sexp)
+sexp = Ractionscript::DSL::Generators::MethodDefinition.new.process(sexp)
+Ractionscript::Sexp.viz_sexp sexp, highlight
+
+# uncomment the rest once the generators output valid ruby syntax tree s-expressions to output actual actionscript source
+## back to ruby source string
+#sourcebuilder = Ruby2Ruby.new.process( sexp )
+#
+## a context class which has the necessary java type constants
+#class BuilderContext
+#  include Ractionscript::JavaTypes::MetaAs
+#end
+#
+## define our sourcebuilder as an instance method 'metacompile'
+#BuilderContext.class_eval("def metacompile\n#{sourcebuilder}\nend")
+#
+## make one do it's thing
+#bc = BuilderContext.new
+#unit = bc.metacompile
+#
+## 'metacompile' returned an Rjb instance of the compilation-unit class from metaas
+#
+## we need a java stringwriter instance to make 'unit' do it's thing
+#sw = Ractionscript::JavaTypes::Util::StringWriter.new
+#Ractionscript::AST::Factory.newWriter.write(sw, unit)
+#
+## output some actual valid ActionScript code (we hope)
+#puts sw.toString
+#
