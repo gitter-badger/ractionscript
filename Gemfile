@@ -3,6 +3,7 @@ source "http://rubygems.org"
 gem "rjb", ">= 1.3.4"
 gem "ruby2ruby"
 gem "sexp_builder", ">= 0.1"
+gem "parse_tree", ">= 3.0.7"
 
 group :development do
   gem "shoulda", ">= 0"

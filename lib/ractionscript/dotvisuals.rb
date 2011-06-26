@@ -27,7 +27,7 @@ class Array
     # if there are no sub-sexps (self is a composition of atoms)
     shorten = !ary && self[1..-1].detect{|o| !o.is_a?(Array)} == nil
     s = " #{object_id} [label=\""
-shorten = false
+#shorten = false
     if shorten
       s += self[0].to_dot_label + "\", shape=rect, fillcolor=#{fillcolor}];\n"
     else
