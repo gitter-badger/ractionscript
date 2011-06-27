@@ -10,12 +10,14 @@ module Ractionscript
         # top level class (compilation unit)
         #TODO support modifiers and annotations
         template :compilation_unit do
-          _ras_factory = Ractionscript::AST::Factory
-          _ras_comp_unit = _ras_factory.newClass(name!)
-          _ras_comp_unit.setPackageName(package_name!)
-          _ras_class = _ras_comp_unit.getType
-          class_definition_body!
-          _ras_comp_unit
+          def metacompile
+            _ras_factory = Ractionscript::AST::Factory
+            _ras_comp_unit = _ras_factory.newClass(name!)
+            _ras_comp_unit.setPackageName(package_name!)
+            _ras_class = _ras_comp_unit.getType
+            class_definition_body!
+            return _ras_comp_unit
+          end
         end
 
         ## Initialize
@@ -28,7 +30,7 @@ module Ractionscript
 
             rule :compilation_unit do
               s(:ras,
-                :compilation_unit,
+                :class_definition,
                 _ % :class_name,
                 _ % :class_definition_body
                )
@@ -41,7 +43,7 @@ module Ractionscript
 
             rewrite :compilation_unit do |m|
               render(:compilation_unit,
-                     :package_name          => "bar.baz.notimplemented",  #FIXME
+                     :package_name          => s(:lit, "bar.baz.notimplemented"),  #FIXME
                      :name                  => m[:class_name],
                      :class_definition_body => m[:class_definition_body]
                     )

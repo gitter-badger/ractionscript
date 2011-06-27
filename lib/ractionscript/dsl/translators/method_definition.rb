@@ -13,9 +13,9 @@ module Ractionscript
         #########
 
           # specify arguments
-          rule :method_definition_arglist do
+          rule :method_definition_paramlist do
             s(:call, nil, :args!,
-              _ % :arglist)    # any number of args
+              _ % :paramlist)    # any number of params
           end
   
           # specify a return type
@@ -50,9 +50,9 @@ module Ractionscript
 
           #TODO rewrite expressions in function bodies
 
-          rewrite :method_definition_arglist do |m|
-            i = m[:arglist]         # input
-            o = s(:ras, :arglist)   # output
+          rewrite :method_definition_paramlist do |m|
+            i = m[:paramlist]         # input
+            o = s(:ras, :paramlist)   # output
             i.shift                 # throw away :arglist
             i = i.shift             # get hash
             i.shift                 # throw away :hash
@@ -65,7 +65,8 @@ module Ractionscript
           end
 
           rewrite :method_definition do |m|
-            s(:ras, :method_definition, m[:method_name], m[:method_definition_body])
+            body = m[:method_definition_body] || s(:lit, :nil)
+            s(:ras, :method_definition, m[:method_name], body)
           end
           
       end

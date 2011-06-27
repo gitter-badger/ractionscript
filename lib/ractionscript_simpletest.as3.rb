@@ -2,28 +2,41 @@
 
 class!("MyActionScriptClass") {
 
+  3.times do |i|
+    args! :x => :int,
+          :y => :int
+    return_type!("type#{i}")
+    function!("doSomething#{i}")
+  end
+
   args! :x => :int,
         :y => :int
+  return_type!('int')
+  function!("doSomething")
 
-  return_type!(:int)
+  #args! :x => :int,
+  #      :y => :int
 
-  function!("doSomething") {
+  #return_type!(:int)
 
-    return!(
-      exp!( x + y )
-    )
+  #function!("doSomething") {
+  #  a = 3
 
-  }
+# #   return!(
+# #     exp!( x + y )
+# #   )
+
+  #}
 
 }
 
-#  args :x            => :int,
-#       :y            => type_for_something(),
-#       :z            => nil,
-#       name_of_sth() => nil,
-#       :all          => :rest
-#  returN :int
-#  function("mySoonToBeActionScriptFunction#{n}") { 
+#  args! :x            => :int,
+#        :y            => type_for_something(),
+#        :z            => nil,
+#        name_of_sth() => nil,
+#        :all          => :rest
+#  return_type! :int
+#  function!("mySoonToBeActionScriptFunction#{n}") { 
 #    #this should become actionscript
 #    exp! { x = (y + 3) * 2 }
 #    #this should still be ruby

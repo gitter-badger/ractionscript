@@ -9,7 +9,8 @@ module Ractionscript
     end
 
     def self.viz_sexp(sexp, sexp_path_query=nil, match_key=:highlight)
-      sexp_path_match = ((sexp / sexp_path_query).first[match_key] rescue nil)
+      #TODO support highlighting more than one match
+      sexp_path_match = ((sexp / sexp_path_query)[0][match_key] rescue nil)
       xsl_file = File.join( File.dirname(__FILE__), 'graphviz', 'notugly.xsl' )
       File.open("./output.tmp", "w") { |f| f.write sexp.to_dot(sexp_path_match) }
       `dot -Tsvg output.tmp > output.tmp.svg`
