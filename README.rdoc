@@ -6,6 +6,7 @@ Programmatically generate ActionScript3 source code from within Ruby.
 
 Write this:
 ===========
+
     # build a class definition
     class!("MyActionScriptClass") {
     
@@ -39,6 +40,7 @@ Write this:
 
 Get this:
 =========
+
     package  bar.baz.notimplemented {
     	public class MyActionScriptClass {
     		public function doSomething(x:int, y:int):int {
