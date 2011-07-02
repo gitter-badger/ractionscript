@@ -1,3 +1,10 @@
+require 'ractionscript/dsl/translators/class_definition'
+require 'ractionscript/dsl/translators/method_definition'
+require 'ractionscript/dsl/translators/expression'
+require 'ractionscript/dsl/generators/compilation_unit'
+require 'ractionscript/dsl/generators/method_definition'
+require 'ractionscript/dsl/generators/expression'
+
 module Ractionscript
 
   module DSL
@@ -6,7 +13,7 @@ module Ractionscript
       sexp = Ractionscript::Sexp.ruby_string_to_sexp( ractionscript_source )
       
       # for development, display it in graphviz and highlight a matching subexpression
-      system "killall rsvg-view"  # temp, convenient for me
+      #system "killall rsvg-view"  # temp, convenient for me
       
       highlight = Q?{
         s(:call, nil, :args!, _ % :paramlist) % :highlight
@@ -44,9 +51,9 @@ module Ractionscript
       # back to ruby source string
       sourcebuilder = Ruby2Ruby.new.process( sexp )
       
-      puts "--------------------source builder--------------"
-      puts sourcebuilder
-      puts "--------------------source builder--------------"
+      #puts "--------------------source builder--------------"
+      #puts sourcebuilder
+      #puts "--------------------source builder--------------"
       
       # careful with class_eval, it'd better not litter or we better reload the class every time
       #load 'ractionscript/builder_context'

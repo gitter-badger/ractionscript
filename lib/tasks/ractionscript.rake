@@ -1,5 +1,5 @@
-rule '.as3' => ['.as3.rb'] do |t|
+rule '.as' => ['.as.rb'] do |t|
 	File.open(t.name, 'w') { |out|
-	  out << Ractionscript::DSL.process(t.source)
+	  out << Ractionscript::DSL.process( File.read( t.source ) )
 	}
 end
