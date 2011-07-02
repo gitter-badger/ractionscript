@@ -12,6 +12,7 @@ end
 require 'rake'
 
 require 'jeweler'
+require 'lib/ractionscript/version'
 Jeweler::Tasks.new do |gem|
   gem.name = "ractionscript"
   gem.homepage = "http://github.com/blak3mill3r/ractionscript"
@@ -20,6 +21,7 @@ Jeweler::Tasks.new do |gem|
   gem.description = %Q{If you ever longed for an easy and concise way to do compile-time logic for ActionScript this is for you.}
   gem.email = "blak3mill3r@gmail.com"
   gem.authors = ["Blake Miller"]
+	gem.version = Ractionscript::Version::STRING
 end
 Jeweler::RubygemsDotOrgTasks.new
 
