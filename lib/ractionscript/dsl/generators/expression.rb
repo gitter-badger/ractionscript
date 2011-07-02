@@ -14,11 +14,11 @@ module Ractionscript
           #############
 
             template :string_expression do
-              _ras_method.addStmt( string_expression! )
+              add_statement string_expression!
             end
 
             template :comment do
-              _ras_method.addComment( comment! )
+              add_comment comment!
             end
 
           #########

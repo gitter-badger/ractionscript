@@ -66,7 +66,11 @@ module Ractionscript
 
           rewrite :method_definition do |m|
             body = m[:method_definition_body] || s(:lit, :nil)
-            s(:ras, :method_definition, m[:method_name], body)
+            s(:ras,
+              :method_definition,
+              m[:method_name],
+              self.process(body) # NOTE recursive on body
+             )
           end
           
       end

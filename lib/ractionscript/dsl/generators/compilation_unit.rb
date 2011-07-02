@@ -11,12 +11,9 @@ module Ractionscript
         #TODO support modifiers and annotations
         template :compilation_unit do
           def metacompile
-            _ras_factory = Ractionscript::AST::Factory
-            _ras_comp_unit = _ras_factory.newClass(name!)
-            _ras_comp_unit.setPackageName(package_name!)
-            _ras_class = _ras_comp_unit.getType
+            new_class name!
             class_definition_body!
-            return _ras_comp_unit
+            @_comp_unit
           end
         end
 

@@ -12,7 +12,6 @@ require 'ruby_parser'
 require 'ractionscript/dsl/translators/class_definition'
 require 'ractionscript/dsl/translators/method_definition'
 require 'ractionscript/dsl/translators/expression'
-require 'ractionscript/dsl/translators/post_processor'
 require 'ractionscript/dsl/generators/compilation_unit'
 require 'ractionscript/dsl/generators/method_definition'
 require 'ractionscript/dsl/generators/expression'
@@ -21,9 +20,7 @@ require 'ractionscript/util'
 require 'ractionscript/rjb'
 Ractionscript::Rjb.load_metaas # must Rjb-import the metaas dependencies before 'constants' is loaded below
 require 'ractionscript/constants'
-
-# FIXME temporary for development
-require 'awesome_print'
+require 'ractionscript/dsl/builder_context' # this uses Rjb so must be required after 'load_metaas'
 
 # NOTE
 # currently all this does is run your ractionscript source's ruby-syntax s-expression
@@ -44,9 +41,7 @@ sexp = Ractionscript::Sexp.ruby_string_to_sexp( ractionscript_source )
 system "killall rsvg-view"  # temp, convenient for me
 
 highlight = Q?{
-  s(:ras,
-    :expression,
-    _ ) % :highlight
+  s(:call, nil, :args!, _ % :paramlist) % :highlight
 }
 
 # translate the ruby-syntax s-expression
@@ -60,15 +55,13 @@ highlight = Q?{
 # so it is a chain of SexpBuilders (translators)
 
 # to visualize it anywhere along the way insert this between calls to translators or generators 'process'
-#Ractionscript::Sexp.viz_sexp sexp, highlight
+#Ractionscript::Sexp.viz_sexp(sexp, highlight); exit(0)
 
 sexp = Ractionscript::DSL::Translators::ClassDefinition.new.process(sexp)
 
 sexp = Ractionscript::DSL::Translators::MethodDefinition.new.process(sexp)
 
 sexp = Ractionscript::DSL::Translators::Expression.new.process(sexp)
-
-sexp = Ractionscript::DSL::Translators::PostProcessor.new.process(sexp)
 
 # now generators...
 # at this point 'sexp' is not a valid ruby AST, it has a bunch of ractionscript specific things
@@ -81,32 +74,21 @@ sexp = Ractionscript::DSL::Generators::MethodDefinition.new.process(sexp)
 
 sexp = Ractionscript::DSL::Generators::Expression.new.process(sexp)
 
-Ractionscript::Sexp.viz_sexp(sexp, highlight);# exit(0)
-
-
 # back to ruby source string
 sourcebuilder = Ruby2Ruby.new.process( sexp )
 
-puts "--------------------source builder--------------"
-puts sourcebuilder
-puts "--------------------source builder--------------"
+#puts "--------------------source builder--------------"
+#puts sourcebuilder
+#puts "--------------------source builder--------------"
 
-# now define a context class which has the necessary java type constants
-# sourcebuilder will be eval'd with self being BuilderContext
-# TODO BuilderContext could do more, the stuff in 'sourcebuilder' could be simplified
-# and the swizzling of method and class modifiers could be done away with
+# careful with class_eval, it'd better not litter or we better reload the class every time
+#load 'ractionscript/builder_context'
 
-class BuilderContext
-  include Ractionscript::JavaTypes::MetaAs
-end
-
-# sourcebuilder defines an instance method 'metacompile' on BuilderContext
-
-BuilderContext.class_eval(sourcebuilder)
+Ractionscript::DSL::BuilderContext.class_eval(sourcebuilder)
 
 # and now...
 
-bc = BuilderContext.new
+bc = Ractionscript::DSL::BuilderContext.new
 
 compilation_unit = bc.metacompile
 
@@ -114,12 +96,16 @@ compilation_unit = bc.metacompile
 # we need a Java StringWriter instance to make 'compilation_unit' do it's thing
 
 sw = Ractionscript::JavaTypes::Util::StringWriter.new
+writer = Ractionscript::AST::Factory.newWriter
+writer._invoke('write',
+               'Ljava.io.Writer;Luk.co.badgersinfoil.metaas.dom.ASCompilationUnit;',
+               sw,
+               compilation_unit
+              )
 
-Ractionscript::AST::Factory.newWriter.write(sw, compilation_unit)
+as3_source_code = sw.toString
 
-# output some actual valid ActionScript code (we hope)
-
-puts "--------------------ACTIONSCRIPT FUCK YEAH--------------"
-puts sw.toString
-puts "--------------------ACTIONSCRIPT FUCK YEAH--------------"
+puts "--------------------ActionScript--------------"
+puts as3_source_code
+puts "--------------------ActionScript--------------"
 
