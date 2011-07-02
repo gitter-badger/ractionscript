@@ -2,6 +2,65 @@
 
 Programmatically generate ActionScript3 source code from within Ruby.
 
+== Synopsis
+
+Write this:
+===========
+    # build a class definition
+    class!("MyActionScriptClass") {
+    
+      # build a function definition
+      args! :x => :int,
+            :y => :int
+    
+      return_type!(:int)
+    
+      function!("doSomething") {
+        comment! "do something awesome"
+        exp! 'x + y'
+      }
+    
+      # with the full power of ruby!
+      3.times do |i|
+    
+        args! :x => :int,
+              :y => :int
+    
+        return_type!(:int)
+    
+        function!("doSomething#{i}") {
+          comment! "return x plus y times some compile time constant"
+          exp! "return(x + y * #{i})"
+        }
+    
+      end
+    
+    }
+
+Get this:
+=========
+    package  bar.baz.notimplemented {
+    	public class MyActionScriptClass {
+    		public function doSomething(x:int, y:int):int {
+    			//do something awesome
+    			x + y;
+    		}
+    		public function doSomething0(x:int, y:int):int {
+    			//return x plus y times some compile time constant
+    			return(x + y * 0);
+    		}
+    		public function doSomething1(x:int, y:int):int {
+    			//return x plus y times some compile time constant
+    			return(x + y * 1);
+    		}
+    		public function doSomething2(x:int, y:int):int {
+    			//return x plus y times some compile time constant
+    			return(x + y * 2);
+    		}
+    	}
+    }
+
+
 == Contributing to ractionscript
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet

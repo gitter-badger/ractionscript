@@ -7,6 +7,7 @@ module Ractionscript
       Factory         = ::Rjb::import 'uk.co.badgersinfoil.metaas.ActionScriptFactory'
       CompilationUnit = ::Rjb::import 'uk.co.badgersinfoil.metaas.dom.ASCompilationUnit'
       ClassType       = ::Rjb::import 'uk.co.badgersinfoil.metaas.dom.ASClassType'
+      Method          = ::Rjb::import 'uk.co.badgersinfoil.metaas.dom.ASMethod'
       Visibility      = ::Rjb::import 'uk.co.badgersinfoil.metaas.dom.Visibility'
       #= Rjb::import ''
     end

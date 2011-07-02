@@ -26,11 +26,11 @@ module Ractionscript
         #############
 
           rewrite :class_definition do |m|
-            o = s(:ras,
-                  :class_definition,
-                  m[:class_name],
-                  m[:class_definition_body]
-                 )
+            s(:ras,
+              :class_definition,
+              m[:class_name],
+              m[:class_definition_body]
+             )
           end
 
       end

@@ -7,6 +7,8 @@ module Ractionscript
       class MethodDefinition < SexpBuilder
         include SexpTemplate
 
+        def initialize; super; end
+
         # method definition (with or without a code block)
         # TODO support all modifiers and annotations
         template :method_definition do
@@ -25,12 +27,8 @@ module Ractionscript
         end
 
         template :return_type do
-          _ras_method.setType(return_type!)
+          _ras_method.setType(return_type!.to_s)
         end
-
-        ## Initialize
-        
-        def initialize; super; end
 
           #########
           # Rules #

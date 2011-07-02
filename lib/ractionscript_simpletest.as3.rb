@@ -1,44 +1,30 @@
-# this is how ractionscript source might look
-
+# build a class definition
 class!("MyActionScriptClass") {
 
-  3.times do |i|
-    args! :x => :int,
-          :y => :int
-    return_type!("type#{i}")
-    function!("doSomething#{i}")
-  end
-
+  # build a function definition
   args! :x => :int,
         :y => :int
-  return_type!('int')
-  function!("doSomething")
 
-  #args! :x => :int,
-  #      :y => :int
+  return_type!(:int)
 
-  #return_type!(:int)
+  function!("doSomething") {
+    comment! "do something awesome"
+    exp! 'x + y'
+  }
 
-  #function!("doSomething") {
-  #  a = 3
+  # with the full power of ruby!
+  3.times do |i|
 
-# #   return!(
-# #     exp!( x + y )
-# #   )
+    args! :x => :int,
+          :y => :int
 
-  #}
+    return_type!(:int)
+
+    function!("doSomething#{i}") {
+      comment! "return x plus y times some compile time constant"
+      exp! "return(x + y * #{i})"
+    }
+
+  end
 
 }
-
-#  args! :x            => :int,
-#        :y            => type_for_something(),
-#        :z            => nil,
-#        name_of_sth() => nil,
-#        :all          => :rest
-#  return_type! :int
-#  function!("mySoonToBeActionScriptFunction#{n}") { 
-#    #this should become actionscript
-#    exp! { x = (y + 3) * 2 }
-#    #this should still be ruby
-#    #x = (y + 3) * 2
-#  }
