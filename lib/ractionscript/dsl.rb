@@ -34,7 +34,7 @@ module Ractionscript
         Translators::MethodDefinition.new  , 
         Translators::Expression.new        , 
           # insert these anywhere in the chain to visualize s-expressions (for development)
-        VisualizeSexp.new( Q?{ t(:ras) } ) ,
+        VisualizeSexp.new( Q?{ t(:ras) % :highlight } ) ,
           # now generators...
           # at this point 'sexp' is not a valid ruby AST, it has a bunch of ractionscript specific things
           # the generators convert this to a ruby AST
