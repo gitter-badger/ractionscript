@@ -4,50 +4,48 @@ require 'ractionscript/dsl/translators/expression'
 require 'ractionscript/dsl/generators/compilation_unit'
 require 'ractionscript/dsl/generators/method_definition'
 require 'ractionscript/dsl/generators/expression'
+require 'ractionscript/dsl/visualize_sexp'
 
 module Ractionscript
 
   module DSL
+
+    # given a string of ractionscript source code
+    # return a string of actionscript source code
     def DSL.process(ractionscript_source)
 
+      # get the ruby AST s-expression
       sexp = Ractionscript::Sexp.ruby_string_to_sexp( ractionscript_source )
       
-      # for development, display it in graphviz and highlight a matching subexpression
-      #system "killall rsvg-view"  # temp, convenient for me
-      
-      highlight = Q?{
-        s(:call, nil, :args!, _ % :paramlist) % :highlight
-      }
-      
-      # translate the ruby-syntax s-expression
+      # translate the ruby AST s-expression
       # rewriting the parts that are meant to become actionscript
       # leaving the rest untouched
       # start from the highest level scope of ractionscript syntax (class definition)
       # motivation for splitting translators into many classes is:
       # 1) separation of concerns, potentially help make this a part of a generic library ruby-babel
       # 2) SexpBuilder is not recursive, i.e. it wont rewrite s-expressions within rewritten ones
-      # so it is a chain of SexpBuilders (translators)
+      # so it is a chain of sexp processors
       
-      # to visualize it anywhere along the way insert this between calls to translators or generators 'process'
-      #Ractionscript::Sexp.viz_sexp(sexp, highlight); exit(0)
-      
-      sexp = Translators::ClassDefinition.new.process(sexp)
-      
-      sexp = Translators::MethodDefinition.new.process(sexp)
-      
-      sexp = Translators::Expression.new.process(sexp)
-      
-      # now generators...
-      # at this point 'sexp' is not a valid ruby AST, it has a bunch of ractionscript specific things
-      # the generators convert this to a ruby AST
-      # which will build ActionScript AST with metaas Java classes
-      
-      sexp = Generators::CompilationUnit.new.process(sexp)
-      
-      sexp = Generators::MethodDefinition.new.process(sexp)
-      
-      sexp = Generators::Expression.new.process(sexp)
-      
+      sexp_processors = [
+          # translators...
+          # we are starting from a ruby AST s-expression
+          # translators find the bits that are ractionscript's DSL syntax
+        Translators::ClassDefinition.new   , 
+        Translators::MethodDefinition.new  , 
+        Translators::Expression.new        , 
+          # insert these anywhere in the chain to visualize s-expressions (for development)
+        VisualizeSexp.new( Q?{ t(:ras) } ) ,
+          # now generators...
+          # at this point 'sexp' is not a valid ruby AST, it has a bunch of ractionscript specific things
+          # the generators convert this to a ruby AST
+          # which will build ActionScript AST with metaas Java classes
+        Generators::CompilationUnit.new    , 
+        Generators::MethodDefinition.new   , 
+        Generators::Expression.new         , 
+      ]
+
+      sexp = sexp_processors.inject(sexp) { |sexp, processor| processor.process(sexp) }
+
       # back to ruby source string
       sourcebuilder = Ruby2Ruby.new.process( sexp )
       
@@ -64,6 +62,7 @@ module Ractionscript
       
       context = BuilderContext.new
       
+      # calling the generated code
       compilation_unit = context.metacompile
       
       # 'metacompile' has returned an Rjb instance of the metaas compilation-unit class
@@ -77,6 +76,7 @@ module Ractionscript
                      compilation_unit
                     )
       
+      # return actionscript source code
       return string_writer.toString
 
     end
