@@ -34,7 +34,7 @@ module Ractionscript
         Translators::MethodDefinition.new  , 
         Translators::Expression.new        , 
           # insert these anywhere in the chain to visualize s-expressions (for development)
-        VisualizeSexp.new( Q?{ t(:ras) % :highlight } ) ,
+        VisualizeSexp.new( Q?{ include(:method_definition) % :highlight } ) ,
           # now generators...
           # at this point 'sexp' is not a valid ruby AST, it has a bunch of ractionscript specific things
           # the generators convert this to a ruby AST
@@ -49,6 +49,7 @@ module Ractionscript
       # back to ruby source string
       sourcebuilder = Ruby2Ruby.new.process( sexp )
       
+      # this may be useful for debugging
       #puts "--------------------source builder--------------"
       #puts sourcebuilder
       #puts "--------------------source builder--------------"

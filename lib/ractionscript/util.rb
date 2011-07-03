@@ -16,7 +16,6 @@ module Ractionscript
       `dot -Tsvg output.tmp > output.tmp.svg`
       `xsltproc #{xsl_file} output.tmp.svg > output.notugly.svg`
       `rm -f output.tmp output.tmp.svg`
-      # fit my small screen
       system "rsvg-view -k output.notugly.svg &"
     end
 
