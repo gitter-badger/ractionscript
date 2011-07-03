@@ -12,22 +12,22 @@ module Ractionscript
         # Rules #
         #########
 
-          # specify arguments
+        # e.g.
+        # args! :foo => :int, :bar => :String
           rule :method_definition_paramlist do
             s(:call, nil, :args!,
               _ % :paramlist)    # any number of params
           end
   
-          # specify a return type
+        # e.g.
+        # return_type! :int
           rule :method_definition_return_type do
             s(:call, nil, :return_type!,
               s(:arglist, _ % :return_type))    # exactly one arg
           end
   
-          # a necessary subexpression of method_definition
-          # amounts to the part might look like:
-          # function!("myMethod")
-          # accept any old ruby expression as the name and trust the programmer that it evaluates as a string
+        # e.g.
+        # function!("myMethod")
           rule :method_definition_base do
             s(:call,
               nil,
@@ -35,8 +35,8 @@ module Ractionscript
               s(:arglist, _ % :method_name ) )
           end
   
-          # define a method
-          # matches with body there or not
+        # e.g.
+        # function!("myMethod") { ... }
           rule :method_definition do
             any(
               method_definition_base,
@@ -48,8 +48,7 @@ module Ractionscript
         # Rewriters #
         #############
 
-          #TODO rewrite expressions in function bodies
-
+        #TODO this could do sanity checks and warn on ractionscript syntax problems
           rewrite :method_definition_paramlist do |m|
             i = m[:paramlist]         # input
             o = s(:ras, :paramlist)   # output

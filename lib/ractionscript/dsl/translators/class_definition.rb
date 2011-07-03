@@ -12,10 +12,14 @@ module Ractionscript
         # Rules #
         #########
 
+        # e.g.
+        # class!("MyClass")
           rule :class_definition_base do
             s(:call, nil, :class!, s(:arglist, _ % :class_name))
           end
 
+        # e.g.
+        # class!("MyClass") { ... }
           rule :class_definition do
             s(:iter, class_definition_base, nil, _ % :class_definition_body)
           end
