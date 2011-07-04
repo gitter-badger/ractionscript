@@ -42,7 +42,7 @@ module Ractionscript
         Generators::CompilationUnit.new    , 
         Generators::MethodDefinition.new   , 
           # insert these anywhere in the chain to visualize s-expressions (for development)
-        #VisualizeSexp.new( Q?{} ) ,
+        #VisualizeSexp.new,
       ]
 
       system "killall rsvg-view"  # temp, convenient for me

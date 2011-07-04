@@ -13,9 +13,9 @@ module Ractionscript
         def initialize(builder_context)
           super()
           @translators = [
-            Ractionscript::DSL::Translators::Expressions::Operator.new,
-            Ractionscript::DSL::Translators::Expressions::Identifier.new(builder_context),
-            Ractionscript::DSL::Translators::Expressions::Literal.new,
+            Expressions::Operator.new,
+            Expressions::Identifier.new(builder_context),
+            Expressions::Literal.new,
             # insert these anywhere in the chain to visualize s-expressions (for development)
             #VisualizeSexp.new( Q?{} ) ,
           ]

@@ -14,11 +14,10 @@ module Ractionscript
         def initialize
           super
           @generators = [
-            Ractionscript::DSL::Generators::Expressions::Operator.new,
-            Ractionscript::DSL::Generators::Expressions::Identifier.new,
-            VisualizeSexp.new( Q?{} ),
-            Ractionscript::DSL::Generators::Expressions::Literal.new,
-            VisualizeSexp.new( Q?{} ),
+            Expressions::Operator.new,
+            Expressions::Identifier.new,
+            Expressions::Literal.new,
+            #VisualizeSexp.new(  ),
           ]
         end
 
