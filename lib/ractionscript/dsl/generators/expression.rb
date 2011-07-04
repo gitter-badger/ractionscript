@@ -1,3 +1,5 @@
+require 'ractionscript/dsl/generators/expressions/identifier.rb'
+
 module Ractionscript
 
   module DSL
@@ -7,7 +9,17 @@ module Ractionscript
       class Expression < SexpBuilder
         include SexpTemplate
         
-        def initialize; super; end
+        def initialize
+          super
+          @generators = [
+            #Ractionscript::DSL::Translators::Expressions::Operator.new,
+            Ractionscript::DSL::Generators::Expressions::Identifier.new,
+          ]
+        end
+
+        def generate_expression(expression)
+          @generators.inject(expression) { |e, p| p.process(e) }
+        end
 
           #############
           # Templates #
@@ -25,6 +37,13 @@ module Ractionscript
           # Rules #
           #########
 
+            rule :expression do
+              s(:ras,
+                :expression,
+                _ % :expression
+               )
+            end
+
             rule :string_expression do
               s(:ras,
                 :string_expression,
@@ -41,6 +60,10 @@ module Ractionscript
           #############
           # Rewriters #
           #############
+
+            rewrite :expression do |m|
+              generate_expression(m[:expression])
+            end
 
             rewrite :string_expression do |m|
               render(:string_expression,

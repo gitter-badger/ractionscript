@@ -13,7 +13,6 @@ module Ractionscript
       end
 
       def process(sexp)
-        system "killall rsvg-view"  # temp, convenient for me
         Ractionscript::Sexp.viz_sexp(sexp, @highlight)
         sexp
       end

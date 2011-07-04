@@ -12,7 +12,8 @@ module Ractionscript
 
     # given a string of ractionscript source code
     # return a string of actionscript source code
-    def DSL.process(ractionscript_source)
+    def DSL.process(ractionscript_source, builder_context)
+      context_clazz = builder_context.class
 
       # get the ruby AST s-expression
       sexp = Ractionscript::Sexp.ruby_string_to_sexp( ractionscript_source )
@@ -32,39 +33,33 @@ module Ractionscript
           # translators find the bits that are ractionscript's DSL syntax
         Translators::ClassDefinition.new   , 
         Translators::MethodDefinition.new  , 
-        Translators::Expression.new        , 
-          # insert these anywhere in the chain to visualize s-expressions (for development)
-        VisualizeSexp.new( Q?{ include(:method_definition) % :highlight } ) ,
+        Translators::Expression.new(builder_context)        , 
           # now generators...
           # at this point 'sexp' is not a valid ruby AST, it has a bunch of ractionscript specific things
           # the generators convert this to a ruby AST
           # which will build ActionScript AST with metaas Java classes
+        Generators::Expression.new         , 
+          # insert these anywhere in the chain to visualize s-expressions (for development)
+        VisualizeSexp.new( Q?{} ) ,
         Generators::CompilationUnit.new    , 
         Generators::MethodDefinition.new   , 
-        Generators::Expression.new         , 
       ]
 
+      system "killall rsvg-view"  # temp, convenient for me
       sexp = sexp_processors.inject(sexp) { |sexp, processor| processor.process(sexp) }
 
       # back to ruby source string
       sourcebuilder = Ruby2Ruby.new.process( sexp )
       
       # this may be useful for debugging
-      #puts "--------------------source builder--------------"
-      #puts sourcebuilder
-      #puts "--------------------source builder--------------"
+      puts "--------------------source builder--------------"
+      puts sourcebuilder
+      puts "--------------------source builder--------------"
       
-      # careful with class_eval, it'd better not litter or we better reload the class every time
-      #load 'ractionscript/builder_context'
-      
-      BuilderContext.class_eval(sourcebuilder)
-      
-      # and now...
-      
-      context = BuilderContext.new
+      context_clazz.class_eval(sourcebuilder)
       
       # calling the generated code
-      compilation_unit = context.metacompile
+      compilation_unit = builder_context.metacompile
       
       # 'metacompile' has returned an Rjb instance of the metaas compilation-unit class
       # we need a Java StringWriter instance to make 'compilation_unit' do it's thing

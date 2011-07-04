@@ -1,3 +1,6 @@
+require 'ractionscript/dsl/translators/expressions/operator.rb'
+require 'ractionscript/dsl/translators/expressions/identifier.rb'
+
 module Ractionscript
 
   module DSL
@@ -6,7 +9,23 @@ module Ractionscript
 
       class Expression < SexpBuilder
 
-        def initialize; super; end
+        def initialize(builder_context)
+          super()
+          @translators = [
+            Ractionscript::DSL::Translators::Expressions::Operator.new,
+            Ractionscript::DSL::Translators::Expressions::Identifier.new(builder_context),
+          ]
+        end
+
+        # un-rubifies the expression
+        # that is, makes it a generic ractionscript representation
+        # there should be nothing very ruby-specific left
+        # with the exception of references to local variables
+        # or method calls to methods which are defined
+        # (calls to missing methods are how you specify ActionScript identifiers)
+        def translate_expression(expression)
+          @translators.inject(expression) { |e, p| p.process(e) }
+        end
 
         #########
         # Rules #
@@ -42,9 +61,9 @@ module Ractionscript
         #############
 
           rewrite :expression do |m|
-            s(:ras,
-              :expression,
-              m[:expression])
+            s(:ras, :expression,
+              translate_expression(m[:expression])
+             )
           end
 
           rewrite :string_expression do |m|

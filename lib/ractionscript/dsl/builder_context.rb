@@ -7,10 +7,10 @@ module Ractionscript
       include Ractionscript::JavaTypes::MetaAs
     
       def initialize
-        @_factory = Ractionscript::AST::Factory
-        @_method = nil
+        @_factory    = Ractionscript::AST::Factory
+        @_method     = nil
         @_code_block = nil
-        @_class = nil
+        @_class      = nil
       end
     
       def new_class(name)
@@ -23,6 +23,10 @@ module Ractionscript
         @_code_block =
         @_method =
           @_class.newMethod(name, Visibility.PUBLIC, 'void')
+      end
+
+      def identifier_reference(identifier)
+        @_factory.newSimpleName(identifier.to_s)
       end
     
       def add_param(name, type); @_method.addParam(name.to_s, type.to_s); end
