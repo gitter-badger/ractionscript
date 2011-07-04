@@ -26,6 +26,7 @@ class MyBuilderContext < Ractionscript::DSL::BuilderContext
   #def x
   #  1
   #end
+
 end
 
 actionscript_source = Ractionscript::DSL.process( File.read( infile ), MyBuilderContext.new )

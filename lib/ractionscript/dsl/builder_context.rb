@@ -25,8 +25,22 @@ module Ractionscript
           @_class.newMethod(name, Visibility.PUBLIC, 'void')
       end
 
+      def binary_expression(operator, left, right)
+        #FIXME fill in the rest of this glue
+        case operator
+          when :*
+            @_factory.newMultiplyExpression(left, right)
+          when :+
+            @_factory.newAddExpression(left, right)
+        end
+      end
+
       def identifier_reference(identifier)
-        @_factory.newSimpleName(identifier.to_s)
+        @_factory.newExpression(identifier.to_s)
+      end
+    
+      def literal_integer(v)
+        @_factory.newIntegerLiteral(v.to_i)
       end
     
       def add_param(name, type); @_method.addParam(name.to_s, type.to_s); end
@@ -34,7 +48,9 @@ module Ractionscript
       #TODO maybe.. make this warn if you are setting it a second time?
       def set_return_type(type); @_method.setType(type.to_s); end
     
-      def add_statement(s); @_code_block.addStmt(s); end
+      def add_string_expression(s); @_code_block.addStmt(s); end
+    
+      def add_expression(s); @_code_block.newExprStmt(s); end
     
       def add_comment(s); @_code_block.addComment(s); end
     

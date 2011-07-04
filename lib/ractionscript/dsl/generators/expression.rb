@@ -1,3 +1,4 @@
+require 'ractionscript/dsl/generators/expressions/operator.rb'
 require 'ractionscript/dsl/generators/expressions/identifier.rb'
 
 module Ractionscript
@@ -12,7 +13,7 @@ module Ractionscript
         def initialize
           super
           @generators = [
-            #Ractionscript::DSL::Translators::Expressions::Operator.new,
+            Ractionscript::DSL::Generators::Expressions::Operator.new,
             Ractionscript::DSL::Generators::Expressions::Identifier.new,
           ]
         end
@@ -25,8 +26,12 @@ module Ractionscript
           # Templates #
           #############
 
+            template :expression do
+              add_expression expression!
+            end
+
             template :string_expression do
-              add_statement string_expression!
+              add_string_expression string_expression!
             end
 
             template :comment do
@@ -62,7 +67,9 @@ module Ractionscript
           #############
 
             rewrite :expression do |m|
-              generate_expression(m[:expression])
+              render(:expression,
+                     :expression => generate_expression(m[:expression])
+                    )
             end
 
             rewrite :string_expression do |m|
