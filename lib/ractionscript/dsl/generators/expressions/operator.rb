@@ -6,7 +6,7 @@ module Ractionscript
 
       module Expressions
 
-        class Operator < SexpBuilder
+        class Literal < SexpBuilder
           include SexpTemplate
 
           def initialize
@@ -17,33 +17,24 @@ module Ractionscript
           # Templates #
           #############
 
-            template :binary_expression do
-              binary_expression operator!, operand_left!, operand_right!
+            template :lit_int do 
+              lit_int v!
             end
 
           #########
           # Rules #
           #########
 
-            rule :binary_expression do
-              s(:ras,
-                :binary_expression,
-                _ % :operand_left,
-                atom % :operator,
-                _ % :operand_right
-               )
+            rule :lit_int do
+              s(:ras, :lit_int, atom % :v)
             end
 
           #############
           # Rewriters #
           #############
             
-            rewrite :binary_expression do |m|
-              render(:binary_expression,
-                     :operator      => s(:lit, m[:operator]),
-                     :operand_left  => process(m[:operand_left]),
-                     :operand_right => process(m[:operand_right])
-                    )
+            rewrite :lit_int do |m|
+              render(:lit_int, :v => s(:lit, m[:v]))
             end
 
         end

@@ -1,5 +1,6 @@
 require 'ractionscript/dsl/generators/expressions/operator.rb'
 require 'ractionscript/dsl/generators/expressions/identifier.rb'
+require 'ractionscript/dsl/generators/expressions/literal.rb'
 
 module Ractionscript
 
@@ -15,6 +16,9 @@ module Ractionscript
           @generators = [
             Ractionscript::DSL::Generators::Expressions::Operator.new,
             Ractionscript::DSL::Generators::Expressions::Identifier.new,
+            VisualizeSexp.new( Q?{} ),
+            Ractionscript::DSL::Generators::Expressions::Literal.new,
+            VisualizeSexp.new( Q?{} ),
           ]
         end
 

@@ -39,7 +39,7 @@ module Ractionscript
         @_factory.newExpression(identifier.to_s)
       end
     
-      def literal_integer(v)
+      def lit_int(v)
         @_factory.newIntegerLiteral(v.to_i)
       end
     

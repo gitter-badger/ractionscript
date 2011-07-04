@@ -1,5 +1,6 @@
 require 'ractionscript/dsl/translators/expressions/operator.rb'
 require 'ractionscript/dsl/translators/expressions/identifier.rb'
+require 'ractionscript/dsl/translators/expressions/literal.rb'
 
 module Ractionscript
 
@@ -14,6 +15,9 @@ module Ractionscript
           @translators = [
             Ractionscript::DSL::Translators::Expressions::Operator.new,
             Ractionscript::DSL::Translators::Expressions::Identifier.new(builder_context),
+            Ractionscript::DSL::Translators::Expressions::Literal.new,
+            # insert these anywhere in the chain to visualize s-expressions (for development)
+            #VisualizeSexp.new( Q?{} ) ,
           ]
         end
 

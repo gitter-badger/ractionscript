@@ -39,10 +39,10 @@ module Ractionscript
           # the generators convert this to a ruby AST
           # which will build ActionScript AST with metaas Java classes
         Generators::Expression.new         , 
-          # insert these anywhere in the chain to visualize s-expressions (for development)
-        VisualizeSexp.new( Q?{} ) ,
         Generators::CompilationUnit.new    , 
         Generators::MethodDefinition.new   , 
+          # insert these anywhere in the chain to visualize s-expressions (for development)
+        #VisualizeSexp.new( Q?{} ) ,
       ]
 
       system "killall rsvg-view"  # temp, convenient for me
