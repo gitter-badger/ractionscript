@@ -11,7 +11,7 @@ class!("MyActionScriptClass") {
     return_type! :int
 
     comment! "do something awesome"
-    exp! { y * ((x + y) * 2) }
+    exp! { a && (b || c) && d }
 #    exp! { x <= y }
 
   }

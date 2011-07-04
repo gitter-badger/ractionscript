@@ -17,24 +17,24 @@ module Ractionscript
           # Templates #
           #############
 
-            template :lit_int do 
-              lit_int v!
+            template :literal do 
+              literal v!
             end
 
           #########
           # Rules #
           #########
 
-            rule :lit_int do
-              s(:ras, :lit_int, atom % :v)
+            rule :literal do
+              s(:ras, :literal, atom % :v)
             end
 
           #############
           # Rewriters #
           #############
             
-            rewrite :lit_int do |m|
-              render(:lit_int, :v => s(:lit, m[:v]))
+            rewrite :literal do |m|
+              render(:literal, :v => s(:lit, m[:v]))
             end
 
         end

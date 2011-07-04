@@ -26,12 +26,22 @@ module Ractionscript
       end
 
       def binary_expression(operator, left, right)
-        #FIXME fill in the rest of this glue
+        #@_factory.newExpression( "(#{left.toString}) #{operator} (#{right.toString})")
+        # NOTE the above works (as an alternative implementation of 'binary_expression') but it clutters everything with parenthesis
+        # without the parenthesis it will discard order of operations from your ruby expression (unacceptable)
         case operator
-          when :*
-            @_factory.newMultiplyExpression(left, right)
           when :+
             @_factory.newAddExpression(left, right)
+          when :-
+            @_factory.newSubtractExpression(left, right)
+          when :*
+            @_factory.newMultiplyExpression(left, right)
+          when :/
+            @_factory.newDivisionExpression(left, right)
+          when :and
+            @_factory.newAndExpression(left, right)
+          when :or
+            @_factory.newOrExpression(left, right)
         end
       end
 
@@ -39,8 +49,14 @@ module Ractionscript
         @_factory.newExpression(identifier.to_s)
       end
     
-      def lit_int(v)
-        @_factory.newIntegerLiteral(v.to_i)
+      def literal(v)
+        case v
+          when Integer
+            @_factory.newIntegerLiteral(v.to_i)
+          else
+            @_factory.newExpression(v.to_s)
+
+        end
       end
     
       def add_param(name, type); @_method.addParam(name.to_s, type.to_s); end
