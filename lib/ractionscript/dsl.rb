@@ -31,7 +31,9 @@ module Ractionscript
           # translators...
           # we are starting from a ruby AST s-expression
           # translators find the bits that are ractionscript's DSL syntax
+        VisualizeSexp.new,
         Translators::ClassDefinition.new   , 
+        VisualizeSexp.new,
         Translators::MethodDefinition.new  , 
         Translators::Expression.new(builder_context)        , 
           # now generators...

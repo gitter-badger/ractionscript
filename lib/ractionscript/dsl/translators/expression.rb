@@ -10,6 +10,16 @@ module Ractionscript
 
       class Expression < SexpBuilder
 
+        def self.translate_expression(expression, builder_context)
+          [
+            Expressions::Operator.new,
+            Expressions::Identifier.new(builder_context),
+            Expressions::Literal.new,
+            # insert these anywhere in the chain to visualize s-expressions (for development)
+            #VisualizeSexp.new( Q?{} ) ,
+          ].inject(expression) {|e, p| p.process(e)}
+        end
+
         def initialize(builder_context)
           super()
           @translators = [

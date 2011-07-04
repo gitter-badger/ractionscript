@@ -26,7 +26,7 @@ module Ractionscript
           #########
 
             rule :literal do
-              s(:ras, :literal, atom % :v)
+              s(:ras, :literal, _ % :v)
             end
 
           #############
@@ -34,7 +34,7 @@ module Ractionscript
           #############
             
             rewrite :literal do |m|
-              render(:literal, :v => s(:lit, m[:v]))
+              render(:literal, :v => m[:v])
             end
 
         end

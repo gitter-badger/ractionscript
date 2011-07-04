@@ -58,6 +58,40 @@ module Ractionscript
 
         end
       end
+
+      # accepts modifiers in any order
+      # the first string is assumed to be the name
+      # the string after that is the type
+      def new_field(*name_type_and_modifiers)
+        modifiers = []
+        name, type = nil, nil
+        name_type_and_modifiers.each do |v|
+          case v
+            when Symbol
+              modifiers << v
+            when String
+              if name
+                type = v
+              else
+                name = v
+              end
+          end
+        end
+        f = @_class.newField(name.to_s, Visibility.PUBLIC, type.to_s)
+        # TODO find a way to use this generically for anything for which the modifier makes sense
+        modifiers.each do |m|
+          case m
+            when :static;    f.setStatic(true)
+            when :const;     f.setConst(true)
+            when :public;    f.setVisibility(Visibility.PUBLIC)
+            when :private;   f.setVisibility(Visibility.PRIVATE)
+            when :protected; f.setVisibility(Visibility.PROTECTED)
+            else
+              raise "Unknown modifier #{m}"
+          end
+        end
+        f
+      end
     
       def add_param(name, type); @_method.addParam(name.to_s, type.to_s); end
     

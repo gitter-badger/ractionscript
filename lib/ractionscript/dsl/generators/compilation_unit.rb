@@ -4,6 +4,7 @@ module Ractionscript
 
     module Generators
 
+      # FIXME rename this ClassDefinition
       class CompilationUnit < SexpBuilder
         include SexpTemplate
 
@@ -33,6 +34,12 @@ module Ractionscript
                )
             end
 
+            rule :class_field_definition do
+              s(:ras,
+                :class_field_definition,
+                _ % :arglist
+               )
+            end
   
           #############
           # Rewriters #
@@ -42,10 +49,13 @@ module Ractionscript
               render(:compilation_unit,
                      :package_name          => s(:lit, "bar.baz.notimplemented"),  #FIXME
                      :name                  => m[:class_name],
-                     :class_definition_body => m[:class_definition_body]
+                     :class_definition_body => process(m[:class_definition_body])
                     )
             end
           
+            rewrite :class_field_definition do |m|
+              s(:call, nil, :new_field, m[:arglist])
+            end
 
       end
 

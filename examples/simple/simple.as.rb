@@ -1,7 +1,7 @@
-#def x
-#  exp! { y * 2 } 
-#end
 class!("MyActionScriptClass") {
+
+  # declare a static const String field
+  field!(:public, :static, :const, 'LABEL', 'String').init!( "foobar" )
 
   # build a function definition
 
@@ -12,6 +12,7 @@ class!("MyActionScriptClass") {
 
     comment! "do something awesome"
     exp! { a && (b || c) && d }
+
 #    exp! { x <= y }
 
   }

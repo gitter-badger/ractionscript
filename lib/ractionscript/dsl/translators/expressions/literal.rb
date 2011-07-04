@@ -31,9 +31,9 @@ module Ractionscript
 
             rewrite :literal, :literal_string do |m|
               if m[:literal]
-                s(:ras, :literal, m[:literal])
+                s(:ras, :literal, s(:lit, m[:literal]))
               elsif m[:string_literal]
-                s(:ras, :literal, "\"#{m[:string_literal]}\"")
+                s(:ras, :literal, s(:str, "\"#{m[:string_literal]}\""))
               end
             end
 

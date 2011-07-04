@@ -10,6 +10,15 @@ module Ractionscript
 
       class Expression < SexpBuilder
         include SexpTemplate
+
+        def self.generate_expression(expression)
+          [
+            Expressions::Operator.new,
+            Expressions::Identifier.new,
+            Expressions::Literal.new,
+            #VisualizeSexp.new(  ),
+          ].inject(expression) { |e,p| p.process(e) }
+        end
         
         def initialize
           super
